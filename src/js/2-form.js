@@ -1,3 +1,6 @@
+import { save, load } from './localStorage';
+import iziToast from 'izitoast';
+
 const feedbackFormEl = document.querySelector('.feedback-form');
 const formData = {
   email: '',
@@ -5,22 +8,16 @@ const formData = {
 };
 
 const fillFormField = () => {
-  try {
-    const formDataFromLS = JSON.parse(
-      localStorage.getItem('feedback-form-state')
-    );
-    if (formDataFromLS === null) {
-      return;
-    }
-
-    const formDataFromLSKeys = Object.keys(formDataFromLS);
-    formDataFromLSKeys.forEach(key => {
-      feedbackFormEl.elements[key].value = formDataFromLS[key];
-      formData[key] = formDataFromLS[key];
-    });
-  } catch (err) {
-    console.log(err);
+  const formDataFromLS = load('feedback-form-state');
+  if (formDataFromLS === undefined) {
+    return;
   }
+
+  const formDataFromLSKeys = Object.keys(formDataFromLS);
+  formDataFromLSKeys.forEach(key => {
+    feedbackFormEl.elements[key].value = formDataFromLS[key];
+    formData[key] = formDataFromLS[key];
+  });
 };
 
 fillFormField();
@@ -29,14 +26,23 @@ const onFormFieldInput = event => {
   const { target: formField } = event;
   const fieldName = formField.name;
   const fieldValue = formField.value;
-  formData[fieldName] = fieldValue;
-  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+  const trimmedFieldValue = fieldValue.trim();
+  formData[fieldName] = trimmedFieldValue;
+  save('feedback-form-state', formData);
 };
 
 const onFeedbackFormSubmit = event => {
   event.preventDefault();
+  const formDataValues = Object.values(formData);
+  if (formDataValues.some(el => el === '')) {
+    iziToast.error({
+      message: 'Fill please all fields',
+      position: 'topRight',
+    });
+    return;
+  }
   event.currentTarget.reset();
-  localStorage.removeItem('feedback-form-atate');
+  localStorage.removeItem('feedback-form-state');
 };
 
 feedbackFormEl.addEventListener('input', onFormFieldInput);
