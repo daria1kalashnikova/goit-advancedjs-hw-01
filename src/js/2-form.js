@@ -18,8 +18,6 @@ const fillFormField = () => {
     feedbackFormEl.elements[key].value = formDataFromLS[key];
     formData[key] = formDataFromLS[key];
   });
-
-  console.log(formData);
 };
 
 fillFormField();
@@ -43,6 +41,7 @@ const onFeedbackFormSubmit = event => {
     });
     return;
   }
+  console.log(formData);
   event.currentTarget.reset();
   localStorage.removeItem('feedback-form-state');
 };
