@@ -18,6 +18,8 @@ const fillFormField = () => {
     feedbackFormEl.elements[key].value = formDataFromLS[key];
     formData[key] = formDataFromLS[key];
   });
+
+  console.log(formData);
 };
 
 fillFormField();
